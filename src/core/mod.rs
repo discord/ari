@@ -61,32 +61,6 @@ where
     }
 }
 
-/// a wrapper type that ensures its wrapped item implements debug.
-pub struct DefaultDebug<T>(pub T);
-
-impl<T> Debug for DefaultDebug<T> {
-    fn fmt(&self, formatter: &mut Formatter) -> Result<(), std::fmt::Error> {
-        match cfg!(verbose) {
-            true => write!(formatter, "{}", std::any::type_name::<T>()),
-            false => Ok(()),
-        }
-    }
-}
-
-impl<T> Deref for DefaultDebug<T> {
-    type Target = T;
-
-    fn deref(&self) -> &T {
-        &self.0
-    }
-}
-
-impl<T> DerefMut for DefaultDebug<T> {
-    fn deref_mut(&mut self) -> &mut T {
-        &mut self.0
-    }
-}
-
 /// returns a slice as an array, if `byte_length(array) == byte_length(slice)`. this function is unsafe because `T` may
 /// not be a memcopy-safe type.
 ///
@@ -365,19 +339,6 @@ where
     #[inline]
     pub fn value(&self) -> &TStorage {
         &self.storage
-    }
-}
-
-/// extensions to `std::vec::Vec`.
-pub trait VecExt {
-    /// clears this `Vec<t>`. if `T` is copy, this method optimizes the clear by truncating the vec's length to zero,
-    /// unlike `Vec<T>::clear()`.
-    fn clear_vec(&mut self);
-}
-
-impl<T> VecExt for Vec<T> {
-    fn clear_vec(&mut self) {
-        self.clear();
     }
 }
 
