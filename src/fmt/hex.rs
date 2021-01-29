@@ -13,7 +13,6 @@ pub fn from_hex(string: &str) -> Result<Vec<u8>, std::io::Error> {
     for byte in string.bytes() {
         value <<= 4;
 
-        #[rustfmt::skip]
         match byte {
             b'A'..=b'F' => value |= byte - b'A' + 10,
             b'a'..=b'f' => value |= byte - b'a' + 10,

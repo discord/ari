@@ -65,20 +65,11 @@ where
 pub struct DefaultDebug<T>(pub T);
 
 impl<T> Debug for DefaultDebug<T> {
-    default fn fmt(&self, formatter: &mut Formatter) -> Result<(), std::fmt::Error> {
+    fn fmt(&self, formatter: &mut Formatter) -> Result<(), std::fmt::Error> {
         match cfg!(verbose) {
             true => write!(formatter, "{}", std::any::type_name::<T>()),
             false => Ok(()),
         }
-    }
-}
-
-impl<T> Debug for DefaultDebug<T>
-where
-    T: Debug,
-{
-    fn fmt(&self, formatter: &mut Formatter) -> Result<(), std::fmt::Error> {
-        self.0.fmt(formatter)
     }
 }
 
@@ -385,20 +376,8 @@ pub trait VecExt {
 }
 
 impl<T> VecExt for Vec<T> {
-    default fn clear_vec(&mut self) {
-        self.clear();
-    }
-}
-
-impl<T> VecExt for Vec<T>
-where
-    T: Copy,
-{
     fn clear_vec(&mut self) {
-        // safe: `T` is copy.
-        unsafe {
-            self.set_len(0);
-        }
+        self.clear();
     }
 }
 
