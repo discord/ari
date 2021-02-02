@@ -1,7 +1,6 @@
 use parking_lot::{Once, OnceState};
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
-use std::ops::{Deref, DerefMut};
 
 static INITIALIZED: Once = Once::new();
 
@@ -339,6 +338,25 @@ where
     #[inline]
     pub fn value(&self) -> &TStorage {
         &self.storage
+    }
+}
+
+/// extensions to `std::vec::Vec`.
+pub trait VecExt {
+    /// clears this `Vec<t>`. if `T` is copy, this method optimizes the clear by truncating the vec's length to zero,
+    /// unlike `Vec<T>::clear()`.
+    fn clear_vec(&mut self);
+}
+
+impl<T> VecExt for Vec<T>
+where
+    T: Copy,
+{
+    fn clear_vec(&mut self) {
+        // safe: `T` is copy.
+        unsafe {
+            self.set_len(0);
+        }
     }
 }
 
