@@ -1,7 +1,6 @@
 use parking_lot::{Once, OnceState};
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
-use std::ops::{Deref, DerefMut};
 
 static INITIALIZED: Once = Once::new();
 
@@ -58,41 +57,6 @@ where
 {
     fn from(_: T) -> BlackHole {
         BlackHole
-    }
-}
-
-/// a wrapper type that ensures its wrapped item implements debug.
-pub struct DefaultDebug<T>(pub T);
-
-impl<T> Debug for DefaultDebug<T> {
-    default fn fmt(&self, formatter: &mut Formatter) -> Result<(), std::fmt::Error> {
-        match cfg!(verbose) {
-            true => write!(formatter, "{}", std::any::type_name::<T>()),
-            false => Ok(()),
-        }
-    }
-}
-
-impl<T> Debug for DefaultDebug<T>
-where
-    T: Debug,
-{
-    fn fmt(&self, formatter: &mut Formatter) -> Result<(), std::fmt::Error> {
-        self.0.fmt(formatter)
-    }
-}
-
-impl<T> Deref for DefaultDebug<T> {
-    type Target = T;
-
-    fn deref(&self) -> &T {
-        &self.0
-    }
-}
-
-impl<T> DerefMut for DefaultDebug<T> {
-    fn deref_mut(&mut self) -> &mut T {
-        &mut self.0
     }
 }
 
@@ -382,12 +346,6 @@ pub trait VecExt {
     /// clears this `Vec<t>`. if `T` is copy, this method optimizes the clear by truncating the vec's length to zero,
     /// unlike `Vec<T>::clear()`.
     fn clear_vec(&mut self);
-}
-
-impl<T> VecExt for Vec<T> {
-    default fn clear_vec(&mut self) {
-        self.clear();
-    }
 }
 
 impl<T> VecExt for Vec<T>
